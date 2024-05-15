@@ -1,16 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tapit_by_wolid_app/provider.dart';
-import 'package:tapit_by_wolid_app/screens/bottomnav_screen.dart';
+import 'package:tapit_by_wolid_app/providers/sign_in_provider.dart';
+import 'package:tapit_by_wolid_app/screens/setpin_screen.dart';
 import 'package:tapit_by_wolid_app/screens/signup_screen.dart';
 import 'package:tapit_by_wolid_app/widgets/font_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/nav_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/textfield_widget.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -26,14 +24,23 @@ class _SignInScreenState extends State<SignInScreen> {
   final _passwordtextinputtype = TextInputType.text;
   String emptyusername = '';
   String emptypassword = '';
-  //bool _response = false;
+  String errormessage = '';
+  String errorpassword = '';
+  bool dialogg = false;
 
+  @override
+  void dispose() {
+    _namecontroller.dispose();
+    _passwordcontroller.dispose();
+    super.dispose();
+  }
 
+  // Dialog Method
   dialog() {
     showDialog(
         context: context,
         builder: (ctx) {
-          return  AlertDialog(
+          return AlertDialog(
             content: Container(
               width: double.infinity,
               height: 150,
@@ -47,49 +54,70 @@ class _SignInScreenState extends State<SignInScreen> {
           );
         });
   }
-  
- Future<void> saveemail() async {
+
+  //savedlogindata
+  Future<void> savedLoginData() async {
+    final authmodel =
+        Provider.of<SignInProvider>(context, listen: false).listofname!;
     var userDatas = json.encode({
       'fnames': _namecontroller.text,
-       'lname': _passwordcontroller.text,
+      'lname': _passwordcontroller.text,
+      'balance': authmodel.amount,
+      'username': authmodel.username,
+      'token': authmodel.token,
+      'lastname': authmodel.lastname,
+      'firstname': authmodel.firstname,
+      'email': authmodel.email,
+      'phone': authmodel.phonenumber,
+      'accountnumber': authmodel.accountnumber,
+      'bankname': authmodel.bankname,
+      'image': authmodel.image
     });
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('useremail', userDatas);
-    print('Hello');
   }
 
+  // SaveName Method
+  /*
   Future<void> saveFirstName() async {
     var userDatas = json.encode({
-      'fnamesencode': Provider.of<TapitProvider>(context, listen: false).userfirstname,
+      'fnamesencode':
+          Provider.of<SignInProvider>(context, listen: false).userFirstname,
     });
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('userfirstname', userDatas);
-    print('Hii');
+   
   }
-  //logintohomepage
-  Future userlogins() async {
+  */
+
+  // SignIn Method
+  Future signIn() async {
     dialog();
     final authmodel =
-        await Provider.of<TapitProvider>(context, listen: false).userlogins(
+        await Provider.of<SignInProvider>(context, listen: false).userSignIn(
       _namecontroller.text,
       _passwordcontroller.text,
     );
     final responsedata = jsonDecode(authmodel.body);
-    print(responsedata);
-    
-    
+    //print(responsedata);
     if (authmodel.statusCode == 200) {
-      saveFirstName();
-      saveemail();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return const Snavigate();
+      //saveFirstName();
+      savedLoginData();
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
+        return const SetPinScreen();
       }));
     } else {
-      return;
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      setState(() {
+        errormessage = responsedata['message'];
+        errorpassword = responsedata['errors']['password'][0];
+      });
     }
   }
 
-  //validatelogin
+  // SignIn validation method
   validate() {
     if (_namecontroller.text.isEmpty) {
       setState(() {
@@ -109,9 +137,9 @@ class _SignInScreenState extends State<SignInScreen> {
         emptypassword = '';
       });
     }
-    if (_namecontroller.text.isNotEmpty ||
+    if (_namecontroller.text.isNotEmpty &&
         _passwordcontroller.text.isNotEmpty) {
-      userlogins();
+      signIn();
     }
   }
 
@@ -122,99 +150,114 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: SizedBox(
-            width: screenwidth,
-            child: Stack(children: [
-              FadeInImage(
-                placeholder: MemoryImage(kTransparentImage),
-                image: const AssetImage('assets/background.png'),
-                height: screenheight,
-                width: double.infinity,
-                fit: BoxFit.cover,
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: screenheight / 6),
+              width: screenwidth - 40,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/background.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
-              Positioned(
-                bottom: 200,
-                top: 180,
-                left: 20,
-                right: 20,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Sign In',
-                        style: GoogleFonts.mulish(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xff1A1A1A),
-                        ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sign In',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontSize: 18),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      errormessage,
+                      style: GoogleFonts.mulish(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xff1A1A1A),
                       ),
-                      const SizedBox(
-                        height: 40,
+                    ),
+                    Text(
+                      errorpassword,
+                      style: GoogleFonts.mulish(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xff1A1A1A),
                       ),
-                      TextFieldWidget(
-                          textobsure: false,
-                          emptytextbox: emptyusername,
-                          controller: _namecontroller,
-                          title: 'Email or Username or Phone Number',
-                          labeled: 'Enter your Email or Username',
-                          textInputType: _nametextinputtype),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFieldWidget(
-                          textobsure: true,
-                          emptytextbox: emptypassword,
-                          controller: _passwordcontroller,
-                          title: 'Password',
-                          labeled: '**********',
-                          image: Image.asset('assets/view.png'),
-                          textInputType: _passwordtextinputtype),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(children: [
-                        const Expanded(child: SizedBox()),
-                        Text(
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    TextFieldWidget(
+                        textobsure: false,
+                        emptytextbox: emptyusername,
+                        controller: _namecontroller,
+                        title: 'Email or Username or Phone Number',
+                        labeled: 'Enter your Email or Username',
+                        textInputType: _nametextinputtype),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFieldWidget(
+                        textobsure: true,
+                        emptytextbox: emptypassword,
+                        controller: _passwordcontroller,
+                        title: 'Password',
+                        labeled: '**********',
+                        image: Image.asset('assets/view.png'),
+                        textInputType: _passwordtextinputtype),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(children: [
+                      const Expanded(child: SizedBox()),
+                      InkWell(
+                        onTap: () {},
+                        child: Text(
                           'Forget Password?',
                           textAlign: TextAlign.end,
                           style: GoogleFonts.mulish(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
                             color: const Color(0xff0012B0),
-                          ),
-                        ),
-                      ]),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      InkWell(
-                          onTap: () {
-                             validate();
-                          },
-                          child: 
-                              const NavigateWidget(navigationvalue: 'Sign In')),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (ctx) {
-                              return const SignUpScreen();
-                            }));
-                          },
-                          child: const TextFontWidget(
-                            text: 'Do not have an account? Sign up',
-                            sizes: 16,
-                            color: Color(0xff0012B0),
-                            weights: FontWeight.w600,
                           ),
                         ),
                       ),
                     ]),
-              ),
-            ]),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                        onTap: () {
+                          validate();
+                        },
+                        child:
+                            const NavigateWidget(navigationvalue: 'Sign In')),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (ctx) {
+                            return const SignUpScreen();
+                          }));
+                        },
+                        child: const TextFontWidget(
+                          text: 'Do not have an account? Sign up',
+                          sizes: 18,
+                          color: Color(0xff0012B0),
+                          weights: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ]),
+            ),
           ),
         ),
       ),

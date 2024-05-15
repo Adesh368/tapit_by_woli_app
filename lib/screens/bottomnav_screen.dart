@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tapit_by_wolid_app/screens/home_page.dart';
+import 'package:tapit_by_wolid_app/screens/settings_screen.dart';
 import 'package:tapit_by_wolid_app/screens/transaction_screen.dart';
+import 'package:tapit_by_wolid_app/screens/verify_pin_screen.dart';
 
 class Snavigate extends StatefulWidget {
   const Snavigate({super.key});
@@ -24,15 +26,21 @@ class _SnavigateState extends State<Snavigate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffffffff),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 20),
+        padding: const EdgeInsets.only(top: 10),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xffffffff),
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+            border: Border.all(width: 2, color: const Color(0xffffffff)),
+            color: const Color(0xffffffff),
           ),
           height: 65,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
                 onTap: () {
@@ -54,7 +62,6 @@ class _SnavigateState extends State<Snavigate> {
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: Row(
-                          //crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Image.asset('assets/home_icon.png',
@@ -207,8 +214,8 @@ class _SnavigateState extends State<Snavigate> {
         IndexedStack(index: currentIndex, children: const [
           HomePageScreen(),
           TransactionScreen(),
-          HomePageScreen(),
-          HomePageScreen(),
+          NotificationScreen(),
+          SettingsScreen(),
         ]),
       ]),
     );

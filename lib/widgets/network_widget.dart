@@ -13,7 +13,7 @@ class NetworkWidget extends StatelessWidget {
       //onTap: onSelect,
       child: Card(
         child: Padding(
-            padding: const EdgeInsets.only(right: 120,bottom: 15),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,

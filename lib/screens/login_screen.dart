@@ -1,15 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tapit_by_wolid_app/model/usermodel.dart';
-import 'package:tapit_by_wolid_app/provider.dart';
 import 'package:tapit_by_wolid_app/screens/bottomnav_screen.dart';
 import 'package:tapit_by_wolid_app/widgets/nav_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/verification_widget.dart';
-import 'package:transparent_image/transparent_image.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,12 +15,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  @override
-  void initState() {
-    userfirstname();
-    super.initState();
-  }
   TextEditingController code1controller = TextEditingController();
   final code2controller = TextEditingController();
   final code3controller = TextEditingController();
@@ -34,17 +24,33 @@ class _LoginScreenState extends State<LoginScreen> {
   String? pin2;
   String? pin3;
   String? pin4;
-  String firstname = '';
+  String? firstName;
+  String? passWord;
 
- Future<void> userfirstname() async {
-     final prefs = await SharedPreferences.getInstance();
-    var extracteduserdata = json.decode(prefs.getString('userfirstname')!);
-    setState(() {
-      firstname = extracteduserdata['fnamesencode'];
-    });
-    print('Hi');
+  @override
+  void initState() {
+    getValidatedata();
+    super.initState();
   }
-  
+
+  @override
+  void dispose() {
+    code1controller.dispose();
+    code2controller.dispose();
+    code3controller.dispose();
+    code4controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> getValidatedata() async {
+    final prefs = await SharedPreferences.getInstance();
+    var extracteduserdata = json.decode(prefs.getString('useremail')!);
+    setState(() {
+      firstName = extracteduserdata['fnames'];
+      passWord = extracteduserdata['lname'];
+    });
+  }
+
   //vverificationpin
   Future<void> onVerify() async {
     final prefs = await SharedPreferences.getInstance();
@@ -59,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
         code2controller.text == pin2 &&
         code3controller.text == pin3 &&
         code4controller.text == pin4) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
         return const Snavigate();
       }));
     } else {
@@ -67,13 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
         wrongpin = 'PIN did not match!';
       });
     }
-
-    print(extracteduserdata);
   }
 
-  
-  //showerrordialog
-  void fingerprint() {
+  //Finger Print Dialog Method
+  void fingerPrint() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -129,9 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
- 
-//calculator logic
-  void calculatorfunction(String btnvalue) {
+
+  // Calculator Method
+  void calculator(String btnvalue) {
     if (code1controller.text.isEmpty) {
       setState(() {
         code1controller.text = btnvalue;
@@ -155,20 +159,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // calculator widegt
+  // Calculator widegt
   Widget buttons(String btntxt) {
     return Expanded(
       child: RawMaterialButton(
         onPressed: () {
-          calculatorfunction(btntxt);
+          calculator(btntxt);
         },
         child: Text(
           btntxt,
-          style: GoogleFonts.mulish(
-            fontSize: 31.72,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xff001533),
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .headlineLarge!
+              .copyWith(color: Theme.of(context).colorScheme.onBackground),
         ),
       ),
     );
@@ -178,129 +181,89 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
-
-    final automod =
-        Provider.of<TapitProvider>(context, listen: false).listofname;
     return Scaffold(
       body: SafeArea(
-        child: SizedBox(
+        child: Container(
           width: screenwidth,
-          child: Stack(children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: const AssetImage('assets/background.png'),
-              height: screenheight,
-              width: double.infinity,
+          padding: const EdgeInsets.only(top: 70),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background.png'),
               fit: BoxFit.cover,
             ),
-            Positioned(
-              bottom: 0,
-              top: 80,
-              left: 0,
-              right: 0,
-              child: Column(children: [
-                Expanded(
-                  child: Column(children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 85, right: 85),
-                        child: Image.asset(
-                          'assets/taplogo.png',
-                          width: double.infinity,
-                        )),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      width: screenwidth - 140,
-                      child: Text(
-                        'Welcome $firstname',
-                        //${automodel!.firstname}
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.mulish(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xff666666),
-                        ),
-                      ),
+          ),
+          child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.only(left: 85, right: 85),
+                child: Image.asset(
+                  'assets/taplogo.png',
+                  width: double.infinity,
+                )),
+            Text(
+              'Welcome $firstName',
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Login to your account.',
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 80, right: 80, top: 20, bottom: 10),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    VerificationWidget(
+                      keyboardnone: TextInputType.none,
+                      controller1: code1controller,
+                      obscuremode: true,
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        'Login to your account.',
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.mulish(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff666666),
-                        ),
-                      ),
+                    VerificationWidget(
+                      keyboardnone: TextInputType.none,
+                      controller1: code2controller,
+                      obscuremode: true,
                     ),
-                    Container(
-                      width: screenwidth - 150,
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            VerificationWidget(
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code1controller,
-                              obscuremode: false,
-                            ),
-                            VerificationWidget(
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code2controller,
-                              obscuremode: false,
-                            ),
-                            VerificationWidget(
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code3controller,
-                              obscuremode: false,
-                            ),
-                            VerificationWidget(
-                              isLast: true,
-                              onChanged: (value) {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  return const Snavigate();
-                                }));
-                              },
-                              //focusNode: _code4FocusNode,
-                              keyboardnone: TextInputType.none,
-                              controller1: code4controller,
-                              obscuremode: false,
-                            ),
-                          ]),
+                    VerificationWidget(
+                      keyboardnone: TextInputType.none,
+                      controller1: code3controller,
+                      obscuremode: true,
+                    ),
+                    VerificationWidget(
+                      isLast: true,
+                      keyboardnone: TextInputType.none,
+                      controller1: code4controller,
+                      obscuremode: true,
                     ),
                   ]),
-                ),
-                Text(
-                  wrongpin,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.mulish(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xffF74242),
-                  ),
-                ),
-                Container(
+            ),
+            Text(
+              wrongpin,
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.mulish(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xffF74242),
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
                   width: screenwidth,
-                  height: screenheight - 500,
+                  height: screenheight / 2.5,
+                  alignment: Alignment.bottomCenter,
                   padding: const EdgeInsets.only(
                     top: 10,
                     left: 26.5,
@@ -343,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Row(children: [
                           InkWell(
                               onTap: () {
-                                fingerprint();
+                                fingerPrint();
                               },
                               child: Image.asset('assets/fingerprint.png')),
                           buttons('0'),
@@ -375,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              ]),
+              ),
             ),
           ]),
         ),

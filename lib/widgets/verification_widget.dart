@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tapit_by_wolid_app/screens/bottomnav_screen.dart';
 
 class VerificationWidget extends StatelessWidget {
   VerificationWidget({
     this.obscuremode = true,
     this.isLast = false,
     this.onSubmitted,
-    required this.onChanged,
-    
     required this.controller1,
     this.readonly = true,
     required this.keyboardnone,
@@ -18,23 +15,16 @@ class VerificationWidget extends StatelessWidget {
 
   final TextEditingController controller1;
   final TextInputType keyboardnone;
-
   final ValueChanged<String>? onSubmitted;
   final bool isLast;
   final bool readonly;
-  
-  final ValueChanged<String> onChanged;
 
   bool obscuremode;
 
   @override
   Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
     return Container(
-      //height: 45,
-      width: screenwidth - 350,
-      //padding: EdgeInsets.all(15),
+      width:45,
       decoration: BoxDecoration(
         color: const Color(0xffE6E9FF),
         border: Border.all(
@@ -44,9 +34,12 @@ class VerificationWidget extends StatelessWidget {
       ),
       child: TextField(
         readOnly: readonly,
-        onChanged: onChanged,
+        onChanged: (value) {
+          if (value.length == 1) {
+            FocusScope.of(context).nextFocus();
+          }
+        },
         onSubmitted: onSubmitted,
-        // focusNode: focusNodes,
         controller: controller1,
         obscureText: obscuremode,
         textAlign: TextAlign.center,

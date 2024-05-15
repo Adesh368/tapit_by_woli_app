@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tapit_by_wolid_app/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tapit_by_wolid_app/providers/planslist.dart';
 
 class BankTransferScreen extends StatefulWidget {
   const BankTransferScreen({super.key});
@@ -12,11 +15,32 @@ class BankTransferScreen extends StatefulWidget {
 }
 
 class _BankTransferScreenState extends State<BankTransferScreen> {
-  //String textToCopy = '0235178298';
+  String? firstname;
+  String? password;
+  String? accountNumber;
+  String? bankName;
+
+  @override
+  void initState() {
+    getValidatedata();
+    super.initState();
+  }
+
+  Future<void> getValidatedata() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var extracteduserdata = json.decode(prefs.getString('useremail')!);
+    setState(() {
+      firstname = extracteduserdata['fnames'];
+      password = extracteduserdata['lname'];
+      accountNumber = extracteduserdata['accountnumber'];
+      bankName = extracteduserdata['bankname'];
+    });
+    
+  }
   @override
   Widget build(BuildContext context) {
-     final automod =
-        Provider.of<TapitProvider>(context, listen: false).listofname!;
+    // final automod = Provider.of<TapitProvider>(context, listen: false).listofname!;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -88,7 +112,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                                       fontWeight: FontWeight.w500,
                                       color: const Color(0xff666666),
                                     )),
-                                Text(automod.firstname,
+                                Text(firstname.toString(),
                                     style: GoogleFonts.mulish(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -99,7 +123,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                               onTap: () {
                                 
                                 Clipboard.setData(
-                                    ClipboardData(text: automod.accountnumber));
+                                    ClipboardData(text: accountNumber.toString()));
                                     
                               },
                               child: Image.asset('assets/copy.png')),
@@ -117,7 +141,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                                 fontWeight: FontWeight.w500,
                                 color: const Color(0xff666666),
                               )),
-                          Text(automod.accountnumber,
+                          Text(accountNumber.toString(),
                               style: GoogleFonts.mulish(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -137,7 +161,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                                 fontWeight: FontWeight.w500,
                                 color: const Color(0xff666666),
                               )),
-                          Text(automod.bankname,
+                          Text(bankName.toString(),
                               style: GoogleFonts.mulish(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,

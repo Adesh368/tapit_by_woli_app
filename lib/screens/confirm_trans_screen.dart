@@ -44,8 +44,7 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
     }
   }
 
-
-   // calculator widegt
+  // calculator widegt
   Widget buttons(String btntxt) {
     return Expanded(
       child: RawMaterialButton(
@@ -63,8 +62,9 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
       ),
     );
   }
+
   //showerrordialog
-   void fingerprint() {
+  void fingerprint() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -72,13 +72,16 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(child: Center(
-              child: Text('Authentication Required',
-              style: GoogleFonts.mulish(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xff1f1f1f),
-              ),),
+            Expanded(
+                child: Center(
+              child: Text(
+                'Authentication Required',
+                style: GoogleFonts.mulish(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff1f1f1f),
+                ),
+              ),
             )),
             InkWell(
                 onTap: () {
@@ -106,7 +109,7 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15,top: 10),
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
               child: Container(
                   // padding: const EdgeInsets.only(left: 15, right: 15),
                   width: double.infinity,
@@ -117,7 +120,7 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final screenheight = MediaQuery.of(context).size.height;
@@ -273,41 +276,21 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     VerificationWidget(
-                     onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
                       keyboardnone: TextInputType.none,
                       controller1: code1controller,
                       obscuremode: true,
                     ),
                     VerificationWidget(
-                      onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
                       keyboardnone: TextInputType.none,
                       controller1: code2controller,
                       obscuremode: true,
                     ),
                     VerificationWidget(
-                      onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
                       keyboardnone: TextInputType.none,
                       controller1: code3controller,
                       obscuremode: true,
                     ),
                     VerificationWidget(
-                      onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
                       keyboardnone: TextInputType.none,
                       controller1: code4controller,
                       obscuremode: true,
@@ -315,13 +298,13 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
                   ]),
             ),
             //buttonvalue
-             Padding(
-               padding: const EdgeInsets.only(top: 100),
-               child: Container(
+            Padding(
+              padding: const EdgeInsets.only(top: 100),
+              child: Container(
                 height: screenheight - 500,
                 width: screenwidth,
                 padding: const EdgeInsets.only(
-                    top: 10, left: 26, right: 26,bottom: 20 ),
+                    top: 10, left: 26, right: 26, bottom: 20),
                 decoration: const BoxDecoration(
                   color: Color(0xffF2F3FF),
                   borderRadius: BorderRadius.only(
@@ -332,7 +315,6 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -358,10 +340,10 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
                         padding: const EdgeInsets.only(left: 35, right: 30),
                         child: Row(children: [
                           InkWell(
-                            onTap: () {
-                              fingerprint();
-                            },
-                            child: Image.asset('assets/fingerprint.png')),
+                              onTap: () {
+                                fingerprint();
+                              },
+                              child: Image.asset('assets/fingerprint.png')),
                           buttons('0'),
                           //cancelbutton
                           InkWell(
@@ -389,12 +371,11 @@ class _ConfirmTransactionScreenState extends State<ConfirmTransactionScreen> {
                         ]),
                       ),
                     ]),
-                         ),
-             ),
+              ),
+            ),
           ]),
         ),
       ),
     );
-    
   }
 }

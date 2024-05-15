@@ -1,10 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:tapit_by_wolid_app/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tapit_by_wolid_app/screens/setpin_screen.dart';
 import 'package:tapit_by_wolid_app/widgets/nav_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/verification_widget.dart';
@@ -21,25 +18,49 @@ class VerifyNumberScreen extends StatefulWidget {
 }
 
 class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
-  //controllervariable
   final code1controller = TextEditingController();
   final code2controller = TextEditingController();
   final code3controller = TextEditingController();
   final code4controller = TextEditingController();
-  String allfourcode = '';
-  //verifycodeandmailfunction
-  Future verifycode() async {
+  String allFourCode = '';
+  String? mail;
+  String? phone;
+
+  @override
+  void initState() {
+    getSavedData();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    code1controller.dispose();
+    code2controller.dispose();
+    code3controller.dispose();
+    code4controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> getSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    var extracteduserdata = json.decode(prefs.getString('useremail')!);
     setState(() {
-      allfourcode = code1controller.text;
-      allfourcode = code2controller.text;
-      allfourcode = code3controller.text;
-      allfourcode = code4controller.text;
+      mail = extracteduserdata['email'];
+      phone = extracteduserdata['phone'];
+    });
+  }
+
+  // Verify Receive Code Method
+  Future verifyCode() async {
+    setState(() {
+      allFourCode = code1controller.text;
+      allFourCode = code2controller.text;
+      allFourCode = code3controller.text;
+      allFourCode = code4controller.text;
     });
     final emailcodeurl = Uri.parse('https://api.tapit.ng/api/auth/verifyemail');
-    // final authmodell =
-    //    Provider.of<TapitProvider>(context, listen: false).listofname!;
     try {
-      final verifycoderesponse = await http.post(
+      final response = await http.post(
         emailcodeurl,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -48,13 +69,14 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
         body: jsonEncode(
           {
             'email': widget.mail,
-            'code': allfourcode,
+            'code': allFourCode,
           },
         ),
       );
-      final coderesponsedata = jsonDecode(verifycoderesponse.body);
-      print(coderesponsedata);
-      if (verifycoderesponse.statusCode == 200) {
+      final responsedata = jsonDecode(response.body);
+      //print(responsedata);
+      if (response.statusCode == 200) {
+        // ignore: use_build_context_synchronously
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context) {
           return const SetPinScreen();
@@ -62,162 +84,129 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       } else {
         return;
       }
-      return verifycoderesponse;
+      return response;
     } catch (e) {
       rethrow;
     }
   }
 
-  //sendcodeagainfunction
-  Future sendcode() async {
-    final authmodel =
-        Provider.of<TapitProvider>(context, listen: false).listofname;
-    final emailcodeurl = Uri.parse('https://api.tapit.ng/api/auth/verifyemail');
+  // Reverify Mail Method
+  Future reVerifyMail() async {
+    //final authmodel = Provider.of<SignUpProvider>(context, listen: false).listofname;
+    final url = Uri.parse('https://api.tapit.ng/api/auth/verifyemail');
     try {
-      final coderesponse = await http.post(
-        emailcodeurl,
+      final response = await http.post(
+        url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json',
         },
         body: jsonEncode(
           {
-            'email': authmodel!.email,
+            'email': mail,
           },
         ),
       );
-      final coderesponsedata = jsonDecode(coderesponse.body);
-      print(coderesponsedata);
-      return coderesponse;
+      final responsedata = jsonDecode(response.body);
+      //print(responsedata);
+      return response;
     } catch (e) {
       rethrow;
     }
   }
-  //focus variable
-  /*
-  final _code1FocusNode = FocusNode();
-  final _code2FocusNode = FocusNode();
-  final _code3FocusNode = FocusNode();
-  final _code4FocusNode = FocusNode();
-  */
 
   @override
   Widget build(BuildContext context) {
-    final authmodel =
-        Provider.of<TapitProvider>(context, listen: false).usernumber;
-
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenhidth = MediaQuery.of(context).size.height;
-    // print(screenhidth/2);
+    //final authmodel = Provider.of<SignUpProvider>(context, listen: false).usernumber;
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 30),
-            child: SizedBox(
-              height: screenhidth - 500,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(47, 0, 47, 0),
-                      child: Image.asset(
-                        'assets/enter.png',
-                        width: double.infinity,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(children: [
+                Image.asset(
+                  'assets/enter.png',
+                  width: double.infinity,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Enter the 4-Digit code sent to the mail \n provided or  +234$phone',
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
-                    ),
-                    Text(
-                      'Enter the 4-Digit code sent to the mail provided or  +234$authmodel',
-                      softWrap: true,
-                      //overflow: Alignment.center,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.mulish(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xff666666),
-                      ),
-                    ),
-                    SizedBox(
-                      width: screenwidth - 150,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            VerificationWidget(
-                              readonly: false,
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.number,
-                              controller1: code1controller,
-                            ),
-                            VerificationWidget(
-                              readonly: false,
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.number,
-                              controller1: code2controller,
-                            ),
-                            VerificationWidget(
-                              readonly: false,
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.number,
-                              controller1: code3controller,
-                            ),
-                            VerificationWidget(
-                              readonly: false,
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.number,
-                              controller1: code4controller,
-                            ),
-                          ]),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 50, right: 50),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(
-                          'Didn’t receive code?',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.mulish(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff666666),
-                          ),
+                        VerificationWidget(
+                          readonly: false,
+                          keyboardnone: TextInputType.number,
+                          controller1: code1controller,
                         ),
-                        InkWell(
-                          onTap: () {
-                            sendcode();
-                          },
-                          child: Text(
-                            'Send again.',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.mulish(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xff1E33F4),
-                            ),
-                          ),
+                        VerificationWidget(
+                          readonly: false,
+                          keyboardnone: TextInputType.number,
+                          controller1: code2controller,
                         ),
-                      ],
+                        VerificationWidget(
+                          readonly: false,
+                          keyboardnone: TextInputType.number,
+                          controller1: code3controller,
+                        ),
+                        VerificationWidget(
+                          readonly: false,
+                          keyboardnone: TextInputType.number,
+                          controller1: code4controller,
+                        ),
+                      ]),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Didn’t receive code?',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                     ),
                     InkWell(
-                        onTap: () {
-                          verifycode();
-                        },
-                        child: const NavigateWidget(navigationvalue: 'verify')),
-                  ]),
+                      onTap: () {
+                        reVerifyMail();
+                      },
+                      child: Text(
+                        'Send again.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: const Color(0xff1E33F4)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                InkWell(
+                    onTap: () {
+                      verifyCode();
+                    },
+                    child: const NavigateWidget(navigationvalue: 'verify')),
+              ]),
             ),
           ),
         ),

@@ -1,11 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:tapit_by_wolid_app/provider.dart';
 import 'package:tapit_by_wolid_app/screens/bottomnav_screen.dart';
-import 'package:tapit_by_wolid_app/screens/verify_pin_screen.dart';
 import 'package:tapit_by_wolid_app/widgets/nav_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/verification_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,40 +18,41 @@ class _SetPinScreenState extends State<SetPinScreen> {
   final code2controller = TextEditingController();
   final code3controller = TextEditingController();
   final code4controller = TextEditingController();
-  String? setpin1;
-  String? setpin2;
-  String? setpin3;
-  String? setpin4;
+  String isEmpty = '';
   @override
   void dispose() {
-    code1controller.text;
-    code2controller.text;
-    code3controller.text;
-    code4controller.text;
+    code1controller.dispose();
+    code2controller.dispose();
+    code3controller.dispose();
+    code4controller.dispose();
     super.dispose();
   }
 
-  Future<void> securitypin() async {
-    var userDatas = json.encode({
-      'controller1': code1controller.text,
-      'controller2': code2controller.text,
-      'controller3': code3controller.text,
-      'controller4': code4controller.text,
-    });
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('usercode', userDatas);
-    
-
-    // print('Hello');
+  // SetPin Method
+  Future<void> onSetPin() async {
+    if (code1controller.text.isEmpty ||
+        code2controller.text.isEmpty ||
+        code3controller.text.isEmpty ||
+        code4controller.text.isEmpty) {
+      setState(() {
+        isEmpty = 'field must not be empty';
+      });
+    } else {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
+        return const Snavigate();
+      }));
+      var userDatas = json.encode({
+        'controller1': code1controller.text,
+        'controller2': code2controller.text,
+        'controller3': code3controller.text,
+        'controller4': code4controller.text,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('usercode', userDatas);
+    }
   }
 
-  
-
-  final _code1FocusNode = FocusNode();
-  final _code2FocusNode = FocusNode();
-  final _code3FocusNode = FocusNode();
-  final _code4FocusNode = FocusNode();
-//calculator logic
+  // Calculator Method
   void valuefunction(String btnvalue) {
     if (code1controller.text.isEmpty) {
       setState(() {
@@ -63,26 +60,23 @@ class _SetPinScreenState extends State<SetPinScreen> {
       });
     } else if (code1controller.text.isNotEmpty &&
         code2controller.text.isEmpty) {
-      //FocusScope.of(context).nextFocus();
       setState(() {
         code2controller.text = btnvalue;
       });
     } else if (code2controller.text.isNotEmpty &&
         code3controller.text.isEmpty) {
-      //FocusScope.of(context).nextFocus();
       setState(() {
         code3controller.text = btnvalue;
       });
     } else if (code3controller.text.isNotEmpty &&
         code4controller.text.isEmpty) {
-      //FocusScope.of(context).nextFocus();
       setState(() {
         code4controller.text = btnvalue;
       });
     }
   }
 
-  // calculator widegt
+  // Calculator Button widegt
   Widget buttons(String btntxt) {
     return Expanded(
       child: RawMaterialButton(
@@ -91,11 +85,10 @@ class _SetPinScreenState extends State<SetPinScreen> {
         },
         child: Text(
           btntxt,
-          style: GoogleFonts.mulish(
-            fontSize: 31.72,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xff001533),
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .headlineLarge!
+              .copyWith(color: Theme.of(context).colorScheme.onBackground),
         ),
       ),
     );
@@ -108,91 +101,68 @@ class _SetPinScreenState extends State<SetPinScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 80),
+          padding: const EdgeInsets.only(top: 80, bottom: 10),
           child: Column(children: [
             Expanded(
-              child: Container(
-                //height: screenheight-500,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 85, right: 85),
-                        child: Image.asset(
-                          'assets/setpin.png',
-                          width: double.infinity,
-                        )),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      width: screenwidth - 140,
-                      child: Text(
-                        'Choose a 4-Digit Pin to login and complete transactions.',
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.mulish(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff666666),
-                        ),
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(left: 85, right: 85),
+                      child: Image.asset(
+                        'assets/setpin.png',
+                        width: double.infinity,
+                      )),
+                  Text(
+                    isEmpty,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.mulish(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xffF74242),
                     ),
-                    Container(
-                      width: screenwidth - 150,
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            VerificationWidget(
-                             onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code1controller,
-                              obscuremode: true,
-                            ),
-                            VerificationWidget(
-                              onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code2controller,
-                              obscuremode: true,
-                            ),
-                            VerificationWidget(
-                              onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code3controller,
-                              obscuremode: true,
-                            ),
-                            VerificationWidget(
-                             onChanged: (value) {
-                                if(value.length == 1){
-                                  FocusScope.of(context);
-                                }
-                              },
-                              keyboardnone: TextInputType.none,
-                              controller1: code4controller,
-                              obscuremode: true,
-                            ),
-                          ]),
-                    ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    'Choose a 4-Digit Pin to login and \ncomplete transactions.',
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 85, right: 85, top: 15),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          VerificationWidget(
+                            keyboardnone: TextInputType.none,
+                            controller1: code1controller,
+                            obscuremode: false,
+                          ),
+                          VerificationWidget(
+                            keyboardnone: TextInputType.none,
+                            controller1: code2controller,
+                            obscuremode: false,
+                          ),
+                          VerificationWidget(
+                            keyboardnone: TextInputType.none,
+                            controller1: code3controller,
+                            obscuremode: false,
+                          ),
+                          VerificationWidget(
+                            keyboardnone: TextInputType.none,
+                            controller1: code4controller,
+                            obscuremode: false,
+                          ),
+                        ]),
+                  ),
+                ],
               ),
             ),
             Container(
-              //height: screenheight - 500,
+              height: screenheight * 0.4,
               width: screenwidth,
-              padding: EdgeInsets.only(
-                  top: 10, left: 30, right: 30, bottom: screenheight - 773),
               decoration: const BoxDecoration(
                 color: Color(0xffF2F3FF),
                 borderRadius: BorderRadius.only(
@@ -200,92 +170,82 @@ class _SetPinScreenState extends State<SetPinScreen> {
                   topRight: Radius.circular(20),
                 ),
               ),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    //buttonvalue
-                    Container(
-                      padding: const EdgeInsets.only(
-                          left: 30, right: 30, bottom: 10),
-                      width: screenwidth,
-                      child: Column(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 30,
+                  right: 30,
+                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      //Button value Widget
+                      Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  buttons('1'),
-                                  buttons('2'),
-                                  buttons('3'),
-                                ]),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  buttons('4'),
-                                  buttons('5'),
-                                  buttons('6'),
-                                ]),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  buttons('7'),
-                                  buttons('8'),
-                                  buttons('9'),
-                                ]),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 79, right: 30),
-                              child: Row(children: [
-                                buttons('0'),
-                                //cancelbutton
-                                InkWell(
-                                  onTap: () {
-                                    if (code4controller.text.isNotEmpty) {
-                                      setState(() {
-                                        code4controller.text = '';
-                                      });
-                                    } else if (code3controller
-                                        .text.isNotEmpty) {
-                                      setState(() {
-                                        code3controller.text = '';
-                                      });
-                                    } else if (code2controller
-                                        .text.isNotEmpty) {
-                                      setState(() {
-                                        code2controller.text = '';
-                                      });
-                                    } else if (code1controller
-                                        .text.isNotEmpty) {
-                                      setState(() {
-                                        code1controller.text = '';
-                                      });
-                                    }
-                                  },
-                                  child: Image.asset('assets/cleared.png'),
-                                ),
-                              ]),
-                            )
+                            buttons('1'),
+                            buttons('2'),
+                            buttons('3'),
                           ]),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (
-                          ctx,
-                        ) {
-                          return const Snavigate();
-                        }));
-                        securitypin();
-                      },
-                      child: Container(
-                          padding: const EdgeInsets.only(left: 15, right: 15),
-                          width: double.infinity,
-                          child:
-                              const NavigateWidget(navigationvalue: 'Set PIN')),
-                    ),
-                  ]),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            buttons('4'),
+                            buttons('5'),
+                            buttons('6'),
+                          ]),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            buttons('7'),
+                            buttons('8'),
+                            buttons('9'),
+                          ]),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const SizedBox(
+                              width: 70,
+                            ),
+                            buttons('0'),
+                            //Clear Button Method
+                            InkWell(
+                              onTap: () {
+                                if (code4controller.text.isNotEmpty) {
+                                  setState(() {
+                                    code4controller.text = '';
+                                  });
+                                } else if (code3controller.text.isNotEmpty) {
+                                  setState(() {
+                                    code3controller.text = '';
+                                  });
+                                } else if (code2controller.text.isNotEmpty) {
+                                  setState(() {
+                                    code2controller.text = '';
+                                  });
+                                } else if (code1controller.text.isNotEmpty) {
+                                  setState(() {
+                                    code1controller.text = '';
+                                  });
+                                }
+                              },
+                              child: Image.asset('assets/cleared.png'),
+                            ),
+                            const SizedBox(
+                              width: 35,
+                            ),
+                          ]),
+                      InkWell(
+                        onTap: () {
+                          onSetPin();
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 15, right: 15),
+                          child: NavigateWidget(navigationvalue: 'Set PIN'),
+                        ),
+                      ),
+                    ]),
+              ),
             ),
           ]),
         ),

@@ -41,6 +41,7 @@ dependencies:
   http: ^1.1.0
   shared_preferences: ^2.2.2
   intl: ^0.19.0
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -100,6 +101,26 @@ flutter:
     - assets/banktransfer.png
     - assets/copy.png
     - assets/Illustration.png
+    - assets/Illustration1.png
+    - assets/profile_icon.png
+    - assets/fingerprintt.png
+    - assets/verify.png
+    - assets/managepin.png
+    - assets/updatepassword.png
+    - assets/referral.png
+    - assets/merchant.png
+    - assets/policy.png
+    - assets/about.png
+    - assets/terms.png
+    - assets/help.png
+    - assets/mtnn.png
+    - assets/gloo.png
+    - assets/etisalatt.png
+    - assets/airtell.png
+    - assets/transactt.png
+    - assets/camera.png
+    - assets/oval.png
+    - assets/aboutt.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

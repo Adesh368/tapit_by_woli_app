@@ -73,22 +73,24 @@ class _HomePageScreenState extends State<HomePageScreen> {
     //final authmodel = Provider.of<SettingsProvider>(context, listen: true).uploadedImage;
     //_selectedImage = authmodel;
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Container(
-            width: screenwidth,
-            height: screenheight,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/aboutt.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Column(children: [
-              Expanded(
-                child: Padding(
+      body: Container(
+        width: screenwidth,
+        height: screenheight,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/aboutt.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              width: screenwidth,
+              height: screenheight - 65,
+              child: Column(children: [
+                Padding(
                   padding: const EdgeInsets.only(left: 20, right: 20, top: 70),
                   child: Column(children: [
                     Row(
@@ -234,129 +236,130 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             ),
                           ]),
                     ),
+                    // const SizedBox(height: 100,),
                   ]),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 40,
-                ),
-                margin: const EdgeInsets.only(top: 20),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30)),
-                  color: Color(0xffffffff),
-                ),
-                height: screenheight * 0.7,
-                width: double.infinity,
-                child: Column(children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 40,
+                  ),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30)),
+                    color: Color(0xffffffff),
+                  ),
+                  height: screenheight * 0.56,
+                  width: double.infinity,
+                  child: Column(children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (ctx) {
+                                  return const TransferScreen();
+                                }));
+                              },
+                              child: const CategoriesWidget(
+                                  title: 'Transfer',
+                                  color: Colors.purple,
+                                  image: 'assets/transfer.png')),
+                          InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (ctx) {
+                                  return BuyAirtimeScreen(
+                                    balance: balance.toString(),
+                                  );
+                                }));
+                              },
+                              child: const CategoriesWidget(
+                                  title: 'Buy Airtime',
+                                  color: Colors.orange,
+                                  image: 'assets/airtime.png')),
+                          InkWell(
                             onTap: () {
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (ctx) {
-                                return const TransferScreen();
-                              }));
-                            },
-                            child: const CategoriesWidget(
-                                title: 'Transfer',
-                                color: Colors.purple,
-                                image: 'assets/transfer.png')),
-                        InkWell(
-                            onTap: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (ctx) {
-                                return BuyAirtimeScreen(
+                                return BuyDataScreen(
                                   balance: balance.toString(),
                                 );
                               }));
                             },
                             child: const CategoriesWidget(
-                                title: 'Buy Airtime',
-                                color: Colors.orange,
-                                image: 'assets/airtime.png')),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (ctx) {
-                              return BuyDataScreen(
-                                balance: balance.toString(),
-                              );
-                            }));
+                                title: 'Buy Data',
+                                color: Colors.green,
+                                image: 'assets/data.png'),
+                          ),
+                        ]),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CategoriesWidget(
+                              title: 'Cable & TV',
+                              color: Colors.pink,
+                              image: 'assets/tv.png'),
+                          CategoriesWidget(
+                              title: 'Bill Payment',
+                              color: Colors.lightBlue,
+                              image: 'assets/bill.png'),
+                          CategoriesWidget(
+                              title: 'Refer & Earn',
+                              color: Color.fromARGB(255, 203, 84, 224),
+                              image: 'assets/earn.png')
+                        ]),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 100,
+                      child: PageView.builder(
+                          onPageChanged: (int index) {
+                            setState(() {
+                              current = index;
+                            });
                           },
-                          child: const CategoriesWidget(
-                              title: 'Buy Data',
-                              color: Colors.green,
-                              image: 'assets/data.png'),
-                        ),
-                      ]),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CategoriesWidget(
-                            title: 'Cable & TV',
-                            color: Colors.pink,
-                            image: 'assets/tv.png'),
-                        CategoriesWidget(
-                            title: 'Bill Payment',
-                            color: Colors.lightBlue,
-                            image: 'assets/bill.png'),
-                        CategoriesWidget(
-                            title: 'Refer & Earn',
-                            color: Color.fromARGB(255, 203, 84, 224),
-                            image: 'assets/earn.png')
-                      ]),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 100,
-                    child: PageView.builder(
-                        onPageChanged: (int index) {
-                          setState(() {
-                            current = index;
-                          });
-                        },
-                        controller: _pagecontroller,
-                        itemCount: adverts.length,
-                        itemBuilder: (ctx, index) {
-                          return AdvertWidget(image: adverts[index].add1);
-                        }),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      adverts.length,
-                      (index) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 1),
-                        width: (index == current) ? 20 : 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: (index == current)
-                              ? const Color(0xff1E33F4)
-                              : const Color(0xff666666),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(10),
+                          controller: _pagecontroller,
+                          itemCount: adverts.length,
+                          itemBuilder: (ctx, index) {
+                            return AdvertWidget(image: adverts[index].add1);
+                          }),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        adverts.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 1),
+                          width: (index == current) ? 20 : 5,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: (index == current)
+                                ? const Color(0xff1E33F4)
+                                : const Color(0xff666666),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ]),
-              ),
-            ]),
+                  ]),
+                ),
+              ]),
+            ),
           ),
         ),
       ),

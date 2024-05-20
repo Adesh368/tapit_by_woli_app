@@ -16,15 +16,15 @@ class _TransactionScreenState extends State<TransactionScreen> {
   List<GetTransaction> transactionCart = [];
   bool isComplete = true;
   String? token;
-  String gloImage ='assets/gloo.png';
+  String gloImage = 'assets/gloo.png';
   String mtnImage = 'assets/mtnn.png';
   String airtelImage = 'assets/airtell.png';
   String etisalattImage = 'assets/etisalatt.png';
   String? transacttImage = 'assets/transactt.png';
   @override
   void initState() {
-      getSavedBalance();
-     // encodeAndDecodeString();
+    getSavedBalance();
+    // encodeAndDecodeString();
     super.initState();
   }
 
@@ -118,64 +118,68 @@ class _TransactionScreenState extends State<TransactionScreen> {
             const SizedBox(
               height: 20,
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    isComplete = true;
-                  });
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 47),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xff1E33F4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
-                        ),
-                      ]),
-                  child: Text(
-                    'Completed',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: const Color(0xffffffff),
-                        ),
+            SizedBox(
+              child: Row(children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isComplete = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 47),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(0xff1E33F4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]),
+                    child: Text(
+                      'Completed',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: const Color(0xffffffff),
+                          ),
+                    ),
                   ),
                 ),
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    isComplete = false;
-                  });
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 47),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xffF2F3FF),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
-                        ),
-                      ]),
-                  child: Text(
-                    'Scheduled',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
+                const Spacer(),
+                //const SizedBox(width: 35),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isComplete = false;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 47),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(0xffF2F3FF),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]),
+                    child: Text(
+                      'Scheduled',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                    ),
                   ),
                 ),
-              ),
-            ]),
+              ]),
+            ),
             const SizedBox(
               height: 20,
             ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tapit_by_wolid_app/screens/setpin_screen.dart';
@@ -7,12 +8,9 @@ import 'package:tapit_by_wolid_app/widgets/nav_widget.dart';
 import 'package:tapit_by_wolid_app/widgets/verification_widget.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
-  const VerifyNumberScreen({
-    required this.mail,
-    super.key,
-  });
+  const VerifyNumberScreen([this.mail, Key? key]) : super(key: key);
 
-  final String mail;
+  final String? mail;
   @override
   State<VerifyNumberScreen> createState() => _VerifyNumberScreenState();
 }
@@ -25,6 +23,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
   String allFourCode = '';
   String? mail;
   String? phone;
+  String? errormessage;
+  bool isLoadig = false;
 
   @override
   void initState() {
@@ -50,8 +50,38 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
     });
   }
 
+  // Validate onboarding screen
+  Future<void> _saved() async {
+    var userDatas = json.encode({
+      'verify': 'check',
+    });
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('verifyemail', userDatas);
+  }
+
+  // Dialog Method
+  dialog() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            content: Container(
+              width: double.infinity,
+              height: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
+  }
+
   // Verify Receive Code Method
   Future verifyCode() async {
+    dialog();
     setState(() {
       allFourCode = code1controller.text;
       allFourCode = code2controller.text;
@@ -68,7 +98,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
         },
         body: jsonEncode(
           {
-            'email': widget.mail,
+            'email': mail,
             'code': allFourCode,
           },
         ),
@@ -76,15 +106,18 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       final responsedata = jsonDecode(response.body);
       //print(responsedata);
       if (response.statusCode == 200) {
+        _saved();
         // ignore: use_build_context_synchronously
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context) {
           return const SetPinScreen();
         }));
       } else {
-        return;
+        setState(() {
+          errormessage = 'Incorrect code';
+        });
       }
-      return response;
+      // return response;
     } catch (e) {
       rethrow;
     }
@@ -92,6 +125,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
 
   // Reverify Mail Method
   Future reVerifyMail() async {
+    setState(() {
+      isLoadig = true;
+    });
     //final authmodel = Provider.of<SignUpProvider>(context, listen: false).listofname;
     final url = Uri.parse('https://api.tapit.ng/api/auth/verifyemail');
     try {
@@ -107,11 +143,27 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
           },
         ),
       );
+      setState(() {
+        isLoadig = false;
+      });
       final responsedata = jsonDecode(response.body);
       //print(responsedata);
       return response;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  _validate() {
+    if (code1controller.text.isEmpty ||
+        code2controller.text.isEmpty ||
+        code3controller.text.isEmpty ||
+        code4controller.text.isEmpty) {
+      setState(() {
+        errormessage = 'Fields cannot be empty';
+      });
+    } else {
+      verifyCode();
     }
   }
 
@@ -129,6 +181,18 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                   'assets/enter.png',
                   width: double.infinity,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                if (errormessage != null)
+                  Text(
+                    errormessage.toString(),
+                    style: GoogleFonts.mulish(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xffF74242),
+                    ),
+                  ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -187,14 +251,23 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                       onTap: () {
                         reVerifyMail();
                       },
-                      child: Text(
-                        'Send again.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(color: const Color(0xff1E33F4)),
-                      ),
+                      child: isLoadig
+                          ? Text(
+                              'sending...',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xff1E33F4)),
+                            )
+                          : Text(
+                              'Send again.',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xff1E33F4)),
+                            ),
                     ),
                   ],
                 ),
@@ -203,7 +276,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                 ),
                 InkWell(
                     onTap: () {
-                      verifyCode();
+                      _validate();
                     },
                     child: const NavigateWidget(navigationvalue: 'verify')),
               ]),

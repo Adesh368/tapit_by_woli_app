@@ -7,6 +7,7 @@ import 'package:tapit_by_wolid_app/screens/login_screen.dart';
 import 'package:tapit_by_wolid_app/screens/setpin_screen.dart';
 import 'package:tapit_by_wolid_app/screens/sign_in_screen.dart';
 import 'package:tapit_by_wolid_app/screens/onboarding_screen.dart';
+import 'package:tapit_by_wolid_app/screens/verify_number_screen.dart';
 import 'package:tapit_by_wolid_app/widgets/font_widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,6 +22,8 @@ class _SplashScreenState extends State<SplashScreen>
   String? userName;
   String? onboardData;
   String? userFourPin;
+  String? emailScreen;
+  String? signUpRoute;
 
   // Get Saved Data Method
   Future<void> getValidatedata() async {
@@ -31,9 +34,17 @@ class _SplashScreenState extends State<SplashScreen>
         json.decode(prefs.getString('validate').toString());
     var validateSetPinScreen =
         json.decode(prefs.getString('usercode').toString());
+    var validateEmailScreen =
+        json.decode(prefs.getString('verifyemail').toString());
+    if (validateEmailScreen != null) {
+      setState(() {
+        emailScreen = validateEmailScreen['verify'];
+      });
+    }        
     if (extracteduserdata != null) {
       setState(() {
         userName = extracteduserdata['fnames'];
+        signUpRoute = extracteduserdata['mailscreen'];
       });
     }
     if (validateOnboardingScreen != null) {
@@ -76,6 +87,12 @@ class _SplashScreenState extends State<SplashScreen>
           Navigator.of(context)
               .pushReplacement(MaterialPageRoute(builder: (ctx) {
             return const SetPinScreen();
+          }));
+        }
+        if (signUpRoute == 'code' && emailScreen == null) {
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (ctx) {
+            return const VerifyNumberScreen();
           }));
         }
       });

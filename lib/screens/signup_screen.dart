@@ -36,8 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String emptyEmail = '';
   String emptyUserName = '';
   String emptyPhoneNumber = '';
-  
-   @override
+
+  @override
   void dispose() {
     _namecontroller.dispose();
     _emailcontroller.dispose();
@@ -57,13 +57,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'balance': authmodel.amount,
       'username': authmodel.username,
       'token': authmodel.token,
-      'lastname':authmodel.lastname,
-      'firstname':authmodel.firstname,
-      'email':authmodel.email,
-      'phone':authmodel.phonenumber,
-      'accountnumber':authmodel.accountnumber,
-      'bankname':authmodel.bankname,
-      'image':authmodel.image,
+      'lastname': authmodel.lastname,
+      'firstname': authmodel.firstname,
+      'email': authmodel.email,
+      'phone': authmodel.phonenumber,
+      'accountnumber': authmodel.accountnumber,
+      'bankname': authmodel.bankname,
+      'image': authmodel.image,
+      'mailscreen': 'code',
     });
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('useremail', userDatas);
@@ -114,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // ignore: use_build_context_synchronously
       Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
         return VerifyNumberScreen(
-          mail: _emailcontroller.text,
+          _emailcontroller.text,
         );
       }));
     } else {
@@ -183,7 +184,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-
   // SignIn validation method
   validate() {
     if (_namecontroller.text.isEmpty) {
@@ -204,7 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         emptyEmail = '';
       });
     }
-     if (_usernamecontroller.text.isEmpty) {
+    if (_usernamecontroller.text.isEmpty) {
       setState(() {
         emptyUserName = 'username cannot be empty';
       });
@@ -249,10 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.only(
-                top: 20,
-                bottom: 10
-              ),
+              padding: const EdgeInsets.only(top: 20, bottom: 10),
               width: screenwidth - 60,
               height: screenhidth,
               decoration: const BoxDecoration(
@@ -284,7 +281,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labeled: 'Enter your email',
                         textInputType: _emailtextinputtype),
                     TextFieldWidget(
-                      emptytextbox: emptyUserName,
+                        emptytextbox: emptyUserName,
                         textobsure: false,
                         controller: _usernamecontroller,
                         title: 'Username',
@@ -302,7 +299,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labeled: 'Enter your phone number',
                         textInputType: _numbertextinputtype),
                     TextFieldWidget(
-                      emptytextbox: emptypassword,
+                        emptytextbox: emptypassword,
                         textobsure: true,
                         controller: _passwordcontroller,
                         title: 'Password',
@@ -327,7 +324,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                                 child: const Center(
-                                    child: CircularProgressIndicator(color: Color(0xffffffff),)))
+                                    child: CircularProgressIndicator(
+                                  color: Color(0xffffffff),
+                                )))
                             : const NavigateWidget(
                                 navigationvalue: 'Create your account')),
                     InkWell(
